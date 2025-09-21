@@ -9,9 +9,34 @@ import { Bubble } from "../../atoms/Bubble/Bubble";
 interface DateGridHeaderProps {
   dates: string[];
   showIdHeader: boolean;
+  locale?: string;
+  dateFormat?: Intl.DateTimeFormatOptions;
 }
 
-const DateGridHeader = ({ dates, showIdHeader }: DateGridHeaderProps) => {
+const DateGridHeader = ({
+  dates,
+  showIdHeader,
+  locale = navigator.language,
+  dateFormat = { month: "short", day: "numeric" },
+}: DateGridHeaderProps) => {
+  // Memoized function to format dates
+  const formatDate = useCallback(
+    (dateString: string) => {
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          // If date is invalid, return the original string
+          return dateString;
+        }
+        return date.toLocaleDateString(locale, dateFormat);
+      } catch {
+        // If formatting fails, return the original string
+        return dateString;
+      }
+    },
+    [locale, dateFormat]
+  );
+
   return (
     <div className={css.gridHeader} role="rowgroup">
       <div className={css.gridHeaderRow} role="row">
@@ -31,7 +56,7 @@ const DateGridHeader = ({ dates, showIdHeader }: DateGridHeaderProps) => {
             className={`${css.gridHeaderCell} ${css.center} ${css.widthAuto}`}
             role="columnheader"
           >
-            {date}
+            {formatDate(date)}
           </div>
         ))}
       </div>
@@ -178,6 +203,8 @@ export const DateGrid = ({
   showIdHeader = true,
   variant = GridVariant.BORDERED,
   idColumnWidth,
+  locale,
+  dateFormat,
 }: DateGridProps) => {
   // Memoized callback for handling ID changes
   const handleIdChange = useCallback(
@@ -237,7 +264,12 @@ export const DateGrid = ({
       )}
 
       <div className={css.gridTable}>
-        <DateGridHeader dates={dates} showIdHeader={showIdHeader} />
+        <DateGridHeader
+          dates={dates}
+          showIdHeader={showIdHeader}
+          locale={locale}
+          dateFormat={dateFormat}
+        />
         <DateGridBody
           rows={rows}
           dates={dates}

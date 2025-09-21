@@ -458,6 +458,72 @@ function App() {
           />
         </div>
 
+        {/* DateGrid with localized dates */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid with Localized Dates (US Format)</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            locale="en-US"
+            dateFormat={{ month: "short", day: "numeric" }}
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid with US localized dates"
+            emptyMessage="No data available"
+          />
+        </div>
+
+        {/* DateGrid with different locale */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid with Localized Dates (German Format)</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            locale="de-DE"
+            dateFormat={{ day: "numeric", month: "short" }}
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid with German localized dates"
+            emptyMessage="No data available"
+          />
+        </div>
+
         {/* DateGrid with 30% ID column width */}
         <div style={{ margin: "20px 0" }}>
           <h3>DateGrid with 30% ID Column Width</h3>

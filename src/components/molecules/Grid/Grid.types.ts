@@ -104,4 +104,6 @@ export interface DateGridProps {
   showIdHeader?: boolean; // Whether to show the ID column (with blank header)
   variant?: GridVariantType; // Border variant
   idColumnWidth?: number; // Percentage width for ID column (0-100)
+  locale?: string; // Locale for date formatting (defaults to navigator.language)
+  dateFormat?: Intl.DateTimeFormatOptions; // Date format options for headers
 }
