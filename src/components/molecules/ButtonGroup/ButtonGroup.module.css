@@ -1,0 +1,99 @@
+/* Base button group container */
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+/* Direction variants */
+.horizontal {
+  flex-direction: row;
+}
+
+.vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Alignment variants */
+.left {
+  justify-content: flex-start;
+}
+
+.center {
+  justify-content: center;
+}
+
+.right {
+  justify-content: flex-end;
+}
+
+.spaceBetween {
+  justify-content: space-between;
+}
+
+.spaceAround {
+  justify-content: space-around;
+}
+
+.spaceEvenly {
+  justify-content: space-evenly;
+}
+
+/* Spacing variants */
+.spacingNone {
+  gap: 0;
+}
+
+.spacingSmall {
+  gap: 4px;
+}
+
+.spacingMedium {
+  gap: 8px;
+}
+
+.spacingLarge {
+  gap: 16px;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .buttonGroup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .horizontal {
+    flex-direction: column;
+  }
+  
+  /* Override alignment on mobile for better UX */
+  .left,
+  .center,
+  .right,
+  .spaceBetween,
+  .spaceAround,
+  .spaceEvenly {
+    justify-content: stretch;
+  }
+}
+
+/* Focus management for keyboard navigation */
+.buttonGroup:focus-within {
+  outline: none;
+}
+
+/* Ensure buttons maintain consistent sizing within the group */
+.buttonGroup > * {
+  flex-shrink: 0;
+}
+
+/* Full width buttons on mobile */
+@media (max-width: 768px) {
+  .buttonGroup > * {
+    width: 100%;
+  }
+}
