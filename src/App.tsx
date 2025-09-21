@@ -1,9 +1,12 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Bubble } from "./components/atoms/Bubble/Bubble";
-import { InputField } from "./components/atoms/InputField/InputField";
+import reactLogo from "./assets/react.svg";
+import {
+  Button,
+  ButtonVariant,
+  ButtonSize,
+} from "./components/atoms/Button/Button";
+import viteLogo from "/vite.svg";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,9 +22,27 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div style={{ width: "100px", height: "100px" }}>
-        <InputField />
-        <Bubble />
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+          flexWrap: "wrap",
+          margin: "20px 0",
+        }}
+      >
+        <Button variant={ButtonVariant.PRIMARY} size={ButtonSize.SMALL}>
+          Primary Small
+        </Button>
+        <Button variant={ButtonVariant.SECONDARY} size={ButtonSize.MEDIUM}>
+          Secondary Medium
+        </Button>
+        <Button variant={ButtonVariant.OUTLINE} size={ButtonSize.LARGE}>
+          Outline Large
+        </Button>
+        <Button variant={ButtonVariant.GHOST}>Ghost Default</Button>
+        <Button variant={ButtonVariant.DANGER} disabled>
+          Disabled Danger
+        </Button>
       </div>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
