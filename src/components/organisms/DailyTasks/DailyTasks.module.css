@@ -1,0 +1,76 @@
+/* DailyTasks Organism Component Styles */
+
+.dailyTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a1a);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Grid Container */
+.gridContainer {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dailyTasks {
+    gap: 1rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+  
+  .header {
+    padding: 0 0.25rem;
+  }
+  
+  .buttonContainer {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dailyTasks {
+    gap: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .title {
+    color: var(--color-text-primary-dark, #ffffff);
+  }
+}

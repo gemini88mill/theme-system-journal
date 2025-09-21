@@ -96,6 +96,7 @@ export interface DateGridProps {
     bubbleState: number
   ) => void;
   onRowClick?: (params: { row: DateGridRow; rowIndex: number }) => void;
+  onRowDelete?: (rowIndex: number) => void;
   ariaLabel?: string;
   ariaDescribedBy?: string;
   loading?: boolean;
@@ -106,4 +107,5 @@ export interface DateGridProps {
   idColumnWidth?: number; // Percentage width for ID column (0-100)
   locale?: string; // Locale for date formatting (defaults to navigator.language)
   dateFormat?: Intl.DateTimeFormatOptions; // Date format options for headers
+  showDeleteButton?: boolean; // Whether to show delete button for each row
 }

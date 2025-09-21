@@ -4,6 +4,13 @@ import { GridSize, GridVariant } from "./Grid.types";
 import type { DateGridProps, DateGridRow } from "./Grid.types";
 import { InputField } from "../../atoms/InputField/InputField";
 import { Bubble } from "../../atoms/Bubble/Bubble";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+
+// FontAwesome trash icon component
+const TrashIcon = () => (
+  <FontAwesomeIcon icon={faTrash} size="sm" style={{ color: "red" }} />
+);
 
 // DateGrid Header Component
 interface DateGridHeaderProps {
@@ -28,6 +35,7 @@ const DateGridHeader = ({
           // If date is invalid, return the original string
           return dateString;
         }
+        console.log(date.toLocaleDateString());
         return date.toLocaleDateString(locale, dateFormat);
       } catch {
         // If formatting fails, return the original string
@@ -71,9 +79,11 @@ interface DateGridRowProps {
   dates: string[];
   showIdHeader: boolean;
   idPlaceholder: string;
+  showDeleteButton: boolean;
   onIdChange: (rowIndex: number, newId: string) => void;
   onBubbleChange: (rowIndex: number, date: string, bubbleState: number) => void;
   onRowClick?: (row: DateGridRow, rowIndex: number) => void;
+  onRowDelete?: (rowIndex: number) => void;
 }
 
 const DateGridRowComponent = ({
@@ -82,14 +92,25 @@ const DateGridRowComponent = ({
   dates,
   showIdHeader,
   idPlaceholder,
+  showDeleteButton,
   onIdChange,
   onBubbleChange,
   onRowClick,
+  onRowDelete,
 }: DateGridRowProps) => {
   // Memoized callback for handling row clicks
   const handleRowClick = useCallback(() => {
     onRowClick?.(row, rowIndex);
   }, [onRowClick, row, rowIndex]);
+
+  // Memoized callback for handling row deletion
+  const handleDeleteClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent row click when deleting
+      onRowDelete?.(rowIndex);
+    },
+    [onRowDelete, rowIndex]
+  );
 
   return (
     <div
@@ -104,19 +125,32 @@ const DateGridRowComponent = ({
         }
       }}
     >
-      {/* ID Cell with InputField - conditionally shown */}
+      {/* ID Cell with InputField and Delete Button - conditionally shown */}
       {showIdHeader && (
         <div
           className={`${css.gridCell} ${css.left} ${css.widthMedium}`}
           role="cell"
           onClick={(e) => e.stopPropagation()} // Prevent row click when editing ID
         >
-          <InputField
-            value={row.id}
-            onChange={(newId) => onIdChange(rowIndex, newId)}
-            placeholder={idPlaceholder}
-            className={css.inputField}
-          />
+          <div className={css.idCellContainer}>
+            <InputField
+              value={row.id}
+              onChange={(newId) => onIdChange(rowIndex, newId)}
+              placeholder={idPlaceholder}
+              className={css.inputField}
+            />
+            {showDeleteButton && (
+              <button
+                className={css.deleteButton}
+                onClick={handleDeleteClick}
+                type="button"
+                aria-label={`Delete row ${rowIndex + 1}`}
+                title="Delete row"
+              >
+                <TrashIcon />
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -147,9 +181,11 @@ interface DateGridBodyProps {
   showIdHeader: boolean;
   idPlaceholder: string;
   emptyMessage: string;
+  showDeleteButton: boolean;
   onIdChange: (rowIndex: number, newId: string) => void;
   onBubbleChange: (rowIndex: number, date: string, bubbleState: number) => void;
   onRowClick?: (row: DateGridRow, rowIndex: number) => void;
+  onRowDelete?: (rowIndex: number) => void;
 }
 
 const DateGridBody = ({
@@ -158,9 +194,11 @@ const DateGridBody = ({
   showIdHeader,
   idPlaceholder,
   emptyMessage,
+  showDeleteButton,
   onIdChange,
   onBubbleChange,
   onRowClick,
+  onRowDelete,
 }: DateGridBodyProps) => {
   return (
     <div className={css.gridBody} role="rowgroup">
@@ -177,9 +215,11 @@ const DateGridBody = ({
             dates={dates}
             showIdHeader={showIdHeader}
             idPlaceholder={idPlaceholder}
+            showDeleteButton={showDeleteButton}
             onIdChange={onIdChange}
             onBubbleChange={onBubbleChange}
             onRowClick={onRowClick}
+            onRowDelete={onRowDelete}
           />
         ))
       )}
@@ -195,6 +235,7 @@ export const DateGrid = ({
   onIdChange,
   onBubbleChange,
   onRowClick,
+  onRowDelete,
   ariaLabel,
   ariaDescribedBy,
   loading = false,
@@ -205,6 +246,7 @@ export const DateGrid = ({
   idColumnWidth,
   locale,
   dateFormat,
+  showDeleteButton = false,
 }: DateGridProps) => {
   // Memoized callback for handling ID changes
   const handleIdChange = useCallback(
@@ -276,9 +318,11 @@ export const DateGrid = ({
           showIdHeader={showIdHeader}
           idPlaceholder={idPlaceholder}
           emptyMessage={emptyMessage}
+          showDeleteButton={showDeleteButton}
           onIdChange={handleIdChange}
           onBubbleChange={handleBubbleChange}
           onRowClick={handleRowClick}
+          onRowDelete={onRowDelete}
         />
       </div>
     </div>
