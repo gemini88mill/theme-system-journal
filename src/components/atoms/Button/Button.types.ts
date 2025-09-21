@@ -4,6 +4,7 @@ export const ButtonVariant = {
   OUTLINE: "outline",
   GHOST: "ghost",
   DANGER: "danger",
+  SUCCESS: "success",
 } as const;
 
 export const ButtonSize = {

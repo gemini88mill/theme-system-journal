@@ -46,6 +46,7 @@ function App() {
           Outline Large
         </Button>
         <Button variant={ButtonVariant.GHOST}>Ghost Default</Button>
+        <Button variant={ButtonVariant.SUCCESS}>Success</Button>
         <Button variant={ButtonVariant.DANGER} disabled>
           Disabled Danger
         </Button>
@@ -70,7 +71,7 @@ function App() {
               Cancel
             </Button>
             <Button
-              variant={ButtonVariant.PRIMARY}
+              variant={ButtonVariant.SUCCESS}
               onClick={() => console.log("Save clicked")}
             >
               Save

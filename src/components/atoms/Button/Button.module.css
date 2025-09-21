@@ -129,6 +129,24 @@
   transform: translateY(1px);
 }
 
+/* Success variant */
+.success {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #28a745;
+}
+
+.success:hover:not(.disabled) {
+  background-color: #218838;
+  border-color: #218838;
+}
+
+.success:active:not(.disabled) {
+  background-color: #1e7e34;
+  border-color: #1e7e34;
+  transform: translateY(1px);
+}
+
 /* Disabled state */
 .disabled {
   background-color: #f5f5f5;
