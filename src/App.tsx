@@ -12,10 +12,156 @@ import {
   ButtonGroupDirection,
   ButtonGroupSpacing,
 } from "./components/molecules/ButtonGroup/ButtonGroup.types";
+import { Grid } from "./components/molecules/Grid/Grid";
+import { DateGrid } from "./components/molecules/Grid/DateGrid";
+import {
+  GridAlignment,
+  GridSize,
+  GridColumnWidth,
+  GridVariant,
+} from "./components/molecules/Grid/Grid.types";
+import type {
+  GridColumn,
+  GridSortModel,
+  DateGridRow,
+} from "./components/molecules/Grid/Grid.types";
 import viteLogo from "/vite.svg";
+
+// Sample data type for the grid
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: "active" | "inactive";
+  lastLogin: string;
+}
 
 function App() {
   const [count, setCount] = useState(0);
+  const [sortModel, setSortModel] = useState<GridSortModel[]>([]);
+  const [dateGridData, setDateGridData] = useState<DateGridRow[]>([
+    {
+      id: "Task 1",
+      "2024-01-15": 0,
+      "2024-01-16": 1,
+      "2024-01-17": 2,
+      "2024-01-18": 0,
+      "2024-01-19": 1,
+    },
+    {
+      id: "Task 2",
+      "2024-01-15": 1,
+      "2024-01-16": 2,
+      "2024-01-17": 0,
+      "2024-01-18": 1,
+      "2024-01-19": 2,
+    },
+    {
+      id: "Task 3",
+      "2024-01-15": 2,
+      "2024-01-16": 0,
+      "2024-01-17": 1,
+      "2024-01-18": 2,
+      "2024-01-19": 0,
+    },
+  ]);
+
+  // Sample data for the grid
+  const sampleUsers: User[] = [
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john.doe@example.com",
+      role: "Admin",
+      status: "active",
+      lastLogin: "2024-01-15",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      role: "User",
+      status: "active",
+      lastLogin: "2024-01-14",
+    },
+    {
+      id: 3,
+      name: "Bob Johnson",
+      email: "bob.johnson@example.com",
+      role: "Editor",
+      status: "inactive",
+      lastLogin: "2024-01-10",
+    },
+    {
+      id: 4,
+      name: "Alice Brown",
+      email: "alice.brown@example.com",
+      role: "User",
+      status: "active",
+      lastLogin: "2024-01-16",
+    },
+  ];
+
+  // Column definitions for the grid
+  const userColumns: GridColumn<User>[] = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: GridColumnWidth.SMALL,
+      align: GridAlignment.CENTER,
+      sortable: true,
+    },
+    {
+      field: "name",
+      headerName: "Name",
+      width: GridColumnWidth.MEDIUM,
+      align: GridAlignment.LEFT,
+      sortable: true,
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: GridColumnWidth.LARGE,
+      align: GridAlignment.LEFT,
+      sortable: true,
+    },
+    {
+      field: "role",
+      headerName: "Role",
+      width: GridColumnWidth.MEDIUM,
+      align: GridAlignment.CENTER,
+      sortable: true,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: GridColumnWidth.SMALL,
+      align: GridAlignment.CENTER,
+      sortable: true,
+      renderCell: ({ value }) => (
+        <span
+          style={{
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor: value === "active" ? "#e8f5e8" : "#ffeaea",
+            color: value === "active" ? "#2e7d32" : "#d32f2f",
+          }}
+        >
+          {value}
+        </span>
+      ),
+    },
+    {
+      field: "lastLogin",
+      headerName: "Last Login",
+      width: GridColumnWidth.MEDIUM,
+      align: GridAlignment.CENTER,
+      sortable: true,
+    },
+  ];
 
   return (
     <>
@@ -118,6 +264,269 @@ function App() {
           </ButtonGroup>
         </div>
       </div>
+
+      {/* Grid Examples */}
+      <div style={{ margin: "40px 0" }}>
+        <h2>Grid Examples</h2>
+
+        {/* User data grid */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>User Management Grid (Bordered)</h3>
+          <Grid
+            columns={userColumns}
+            rows={sampleUsers}
+            size={GridSize.MEDIUM}
+            variant={GridVariant.BORDERED}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
+            onRowClick={({ row, rowIndex }) => {
+              console.log("Row clicked:", row, "at index:", rowIndex);
+            }}
+            ariaLabel="User management data grid"
+            emptyMessage="No users found"
+          />
+        </div>
+
+        {/* User data grid borderless */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>User Management Grid (Borderless)</h3>
+          <Grid
+            columns={userColumns}
+            rows={sampleUsers}
+            size={GridSize.MEDIUM}
+            variant={GridVariant.BORDERLESS}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
+            onRowClick={({ row, rowIndex }) => {
+              console.log("Row clicked:", row, "at index:", rowIndex);
+            }}
+            ariaLabel="User management data grid borderless"
+            emptyMessage="No users found"
+          />
+        </div>
+
+        {/* Empty grid example */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>Empty Grid</h3>
+          <Grid
+            columns={userColumns}
+            rows={[]}
+            size={GridSize.SMALL}
+            ariaLabel="Empty data grid"
+            emptyMessage="No data available"
+          />
+        </div>
+      </div>
+
+      {/* DateGrid Examples */}
+      <div style={{ margin: "40px 0" }}>
+        <h2>DateGrid Examples</h2>
+
+        {/* Task tracking grid */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>Task Progress Tracker (Bordered)</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            variant={GridVariant.BORDERED}
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            onRowClick={({ row, rowIndex }) => {
+              console.log("Row clicked:", row, "at index:", rowIndex);
+            }}
+            ariaLabel="Task progress tracking grid"
+            emptyMessage="No tasks found"
+            idPlaceholder="Enter task name"
+          />
+        </div>
+
+        {/* Task tracking grid borderless */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>Task Progress Tracker (Borderless)</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            variant={GridVariant.BORDERLESS}
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            onRowClick={({ row, rowIndex }) => {
+              console.log("Row clicked:", row, "at index:", rowIndex);
+            }}
+            ariaLabel="Task progress tracking grid borderless"
+            emptyMessage="No tasks found"
+            idPlaceholder="Enter task name"
+          />
+        </div>
+
+        {/* DateGrid with blank ID header */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid with Blank ID Header</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            showIdHeader={true} // Shows ID column with blank header
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid with blank ID header"
+            emptyMessage="No data available"
+          />
+        </div>
+
+        {/* DateGrid with custom ID column width */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid with 50% ID Column Width</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            idColumnWidth={50} // ID takes 50%, dates share remaining 50%
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid with 50% ID column width"
+            emptyMessage="No data available"
+          />
+        </div>
+
+        {/* DateGrid with 30% ID column width */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid with 30% ID Column Width</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            idColumnWidth={30} // ID takes 30%, dates share remaining 70%
+            onIdChange={(rowIndex, newId) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, id: newId } : row
+                )
+              );
+            }}
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid with 30% ID column width"
+            emptyMessage="No data available"
+          />
+        </div>
+
+        {/* DateGrid without ID column at all */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>DateGrid without ID Column</h3>
+          <DateGrid
+            rows={dateGridData}
+            dates={[
+              "2024-01-15",
+              "2024-01-16",
+              "2024-01-17",
+              "2024-01-18",
+              "2024-01-19",
+            ]}
+            showIdHeader={false} // Completely hides ID column
+            onBubbleChange={(rowIndex, date, bubbleState) => {
+              setDateGridData((prev) =>
+                prev.map((row, index) =>
+                  index === rowIndex ? { ...row, [date]: bubbleState } : row
+                )
+              );
+            }}
+            ariaLabel="Date grid without ID column"
+            emptyMessage="No data available"
+          />
+        </div>
+
+        {/* Empty date grid example */}
+        <div style={{ margin: "20px 0" }}>
+          <h3>Empty DateGrid</h3>
+          <DateGrid
+            rows={[]}
+            dates={["2024-01-15", "2024-01-16", "2024-01-17"]}
+            ariaLabel="Empty date grid"
+            emptyMessage="No data available"
+          />
+        </div>
+      </div>
+
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
