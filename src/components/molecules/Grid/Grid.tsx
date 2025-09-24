@@ -19,7 +19,21 @@ export const Grid = ({
       return (rowData as Record<string, unknown>)[columnDef] as string;
     } else {
       // If columnDef is an object with renderCell, call the function
-      return columnDef.renderCell(rowData);
+      return columnDef.renderCell?.(rowData);
+    }
+  };
+
+  // Helper function to render header content
+  const renderHeaderContent = (
+    columnDef: ColumnDefinition,
+    headerName: string
+  ) => {
+    if (typeof columnDef === "string") {
+      // If columnDef is a string, use the header name
+      return headerName;
+    } else {
+      // If columnDef is an object with renderHeaderCell, call the function, otherwise use header name
+      return columnDef.renderHeaderCell?.() ?? headerName;
     }
   };
 
@@ -52,7 +66,9 @@ export const Grid = ({
                     : `${otherColumnsWidth}%`,
               }}
             >
-              {hideFirstColumnHeader && index === 0 ? "" : header}
+              {hideFirstColumnHeader && index === 0
+                ? ""
+                : renderHeaderContent(columns[header], header)}
             </th>
           ))}
         </tr>

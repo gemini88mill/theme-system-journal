@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 
-// Column definition - can be either a string (property name) or an object with renderCell
+// Column definition - can be either a string (property name) or an object with renderCell and/or renderHeaderCell
 export type ColumnDefinition =
   | string
   | {
-      renderCell: (rowData: unknown) => ReactNode;
+      renderCell?: (rowData: unknown) => ReactNode;
+      renderHeaderCell?: () => ReactNode;
     };
 
 // Grid columns structure - Record where key is header name, value is column definition

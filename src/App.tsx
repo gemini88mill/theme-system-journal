@@ -60,6 +60,45 @@ function App() {
     },
   };
 
+  // Example with custom header
+  const columnsWithCustomHeader = {
+    Name: "name",
+    Email: "email",
+    Status: "status",
+    Age: "age",
+    Actions: {
+      renderCell: (rowData: unknown) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() =>
+              console.log("Edit user:", (rowData as Record<string, unknown>).id)
+            }
+            style={{ padding: "4px 8px", fontSize: "12px" }}
+          >
+            Edit
+          </button>
+          <button
+            onClick={() =>
+              console.log(
+                "Delete user:",
+                (rowData as Record<string, unknown>).id
+              )
+            }
+            style={{ padding: "4px 8px", fontSize: "12px" }}
+          >
+            Delete
+          </button>
+        </div>
+      ),
+      renderHeaderCell: () => (
+        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <span>⚙️</span>
+          <span>Actions</span>
+        </div>
+      ),
+    },
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Grid Component Example</h1>
@@ -88,6 +127,9 @@ function App() {
         hideFirstColumnHeader
         firstColumnWidth={25}
       />
+
+      <h2>Grid with Custom Header Component</h2>
+      <Grid columns={columnsWithCustomHeader} data={userData} />
     </div>
   );
 }
