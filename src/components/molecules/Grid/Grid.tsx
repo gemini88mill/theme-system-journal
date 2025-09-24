@@ -1,91 +1,82 @@
-import { useMemo } from "react";
-import css from "./Grid.module.css";
-import type { GridProps } from "./Grid.types";
-import { GridSize, GridVariant, GridSortDirection } from "./Grid.types";
-import { GridHeader } from "./GridHeader";
-import { GridBody } from "./GridBody";
+import type { GridProps, ColumnDefinition } from "./Grid.types";
+import styles from "./Grid.module.css";
 
-export const Grid = <T,>({
-  className = "",
-  styles,
+export const Grid = ({
   columns,
-  rows,
-  size = GridSize.MEDIUM,
-  variant = GridVariant.BORDERED,
-  sortModel = [],
-  onSortModelChange,
-  onRowClick,
-  ariaLabel,
-  ariaDescribedBy,
-  loading = false,
-  emptyMessage = "No data available",
-}: GridProps<T>) => {
-  // Memoized sorted rows
-  const sortedRows = useMemo(() => {
-    if (sortModel.length === 0) return rows;
+  data,
+  className,
+  borderless = false,
+  hideFirstColumnHeader = false,
+  firstColumnWidth = 30,
+}: GridProps) => {
+  // Get column headers from the keys of the columns object
+  const columnHeaders = Object.keys(columns);
 
-    return [...rows].sort((a, b) => {
-      for (const sort of sortModel) {
-        const column = columns.find((col) => col.field === sort.field);
-        if (!column) continue;
+  // Helper function to render cell content
+  const renderCellContent = (columnDef: ColumnDefinition, rowData: unknown) => {
+    if (typeof columnDef === "string") {
+      // If columnDef is a string, it's a property name - access it from rowData
+      return (rowData as Record<string, unknown>)[columnDef] as string;
+    } else {
+      // If columnDef is an object with renderCell, call the function
+      return columnDef.renderCell(rowData);
+    }
+  };
 
-        const aValue = a[column.field];
-        const bValue = b[column.field];
-
-        if (aValue === bValue) continue;
-
-        let comparison = 0;
-        if (aValue < bValue) comparison = -1;
-        else if (aValue > bValue) comparison = 1;
-
-        if (sort.sort === GridSortDirection.DESC) {
-          comparison = -comparison;
-        }
-
-        return comparison;
-      }
-      return 0;
-    });
-  }, [rows, sortModel, columns]);
-
-  // Build CSS classes based on props
-  const gridClasses = [
-    css.grid,
-    css[size],
-    css[variant],
-    loading ? css.loading : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  // Calculate the remaining width for other columns
+  const remainingWidth = 100 - firstColumnWidth;
+  const otherColumnsWidth = remainingWidth / (columnHeaders.length - 1);
 
   return (
-    <div
-      className={gridClasses}
-      style={styles}
-      role="table"
-      aria-label={ariaLabel}
-      aria-describedby={ariaDescribedBy}
+    <table
+      className={`${styles.grid} ${
+        borderless ? styles["grid--borderless"] : ""
+      } ${styles["grid--custom-width"]} ${className || ""}`}
+      style={
+        {
+          "--first-column-width": `${firstColumnWidth}%`,
+          "--other-columns-width": `${otherColumnsWidth}%`,
+        } as React.CSSProperties
+      }
     >
-      {loading && (
-        <div className={css.gridLoadingOverlay}>
-          <div>Loading...</div>
-        </div>
-      )}
-
-      <div className={css.gridTable}>
-        <GridHeader
-          columns={columns}
-          sortModel={sortModel}
-          onSortModelChange={onSortModelChange}
-        />
-        <GridBody
-          rows={sortedRows}
-          columns={columns}
-          onRowClick={onRowClick}
-          emptyMessage={emptyMessage}
-        />
-      </div>
-    </div>
+      <thead>
+        <tr>
+          {columnHeaders.map((header, index) => (
+            <th
+              key={header}
+              className={styles.grid__header}
+              style={{
+                width:
+                  index === 0
+                    ? `${firstColumnWidth}%`
+                    : `${otherColumnsWidth}%`,
+              }}
+            >
+              {hideFirstColumnHeader && index === 0 ? "" : header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((rowData, rowIndex) => (
+          <tr key={rowIndex}>
+            {columnHeaders.map((header, index) => (
+              <td
+                key={header}
+                className={styles.grid__cell}
+                style={{
+                  width:
+                    index === 0
+                      ? `${firstColumnWidth}%`
+                      : `${otherColumnsWidth}%`,
+                }}
+              >
+                {renderCellContent(columns[header], rowData)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };

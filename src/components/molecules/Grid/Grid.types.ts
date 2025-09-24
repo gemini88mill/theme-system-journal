@@ -1,111 +1,21 @@
-export const GridAlignment = {
-  LEFT: "left",
-  CENTER: "center",
-  RIGHT: "right",
-} as const;
+import type { ReactNode } from "react";
 
-export const GridSortDirection = {
-  ASC: "asc",
-  DESC: "desc",
-  NONE: "none",
-} as const;
+// Column definition - can be either a string (property name) or an object with renderCell
+export type ColumnDefinition =
+  | string
+  | {
+      renderCell: (rowData: unknown) => ReactNode;
+    };
 
-export const GridSize = {
-  SMALL: "small",
-  MEDIUM: "medium",
-  LARGE: "large",
-} as const;
+// Grid columns structure - Record where key is header name, value is column definition
+export type GridColumns = Record<string, ColumnDefinition>;
 
-export const GridVariant = {
-  BORDERED: "bordered",
-  BORDERLESS: "borderless",
-} as const;
-
-export const GridColumnWidth = {
-  SMALL: "widthSmall",
-  MEDIUM: "widthMedium",
-  LARGE: "widthLarge",
-  XLARGE: "widthXLarge",
-  AUTO: "widthAuto",
-  FIT: "widthFit",
-} as const;
-
-export type GridAlignmentType =
-  (typeof GridAlignment)[keyof typeof GridAlignment];
-export type GridSortDirectionType =
-  (typeof GridSortDirection)[keyof typeof GridSortDirection];
-export type GridSizeType = (typeof GridSize)[keyof typeof GridSize];
-export type GridVariantType = (typeof GridVariant)[keyof typeof GridVariant];
-export type GridColumnWidthType =
-  (typeof GridColumnWidth)[keyof typeof GridColumnWidth];
-
-// Column definition interface
-export interface GridColumn<T = Record<string, unknown>> {
-  field: keyof T;
-  headerName: string;
-  width?: GridColumnWidthType;
-  align?: GridAlignmentType;
-  sortable?: boolean;
-  resizable?: boolean;
-  renderCell?: (params: {
-    value: T[keyof T];
-    row: T;
-    field: keyof T;
-  }) => React.ReactNode;
-  renderHeader?: (params: { column: GridColumn<T> }) => React.ReactNode;
-}
-
-// Sort state interface
-export interface GridSortModel {
-  field: string;
-  sort: GridSortDirectionType;
-}
-
-// Grid props interface
-export interface GridProps<T = Record<string, unknown>> {
-  className?: string;
-  styles?: React.CSSProperties;
-  columns: GridColumn<T>[];
-  rows: T[];
-  size?: GridSizeType;
-  variant?: GridVariantType;
-  sortModel?: GridSortModel[];
-  onSortModelChange?: (sortModel: GridSortModel[]) => void;
-  onRowClick?: (params: { row: T; rowIndex: number }) => void;
-  ariaLabel?: string;
-  ariaDescribedBy?: string;
-  loading?: boolean;
-  emptyMessage?: string;
-}
-
-// Date-based grid types
-export interface DateGridRow {
-  id: string;
-  [date: string]: string | number; // Date keys with bubble state values
-}
-
-export interface DateGridProps {
-  className?: string;
-  styles?: React.CSSProperties;
-  rows: DateGridRow[];
-  dates: string[]; // Array of date strings for column headers
-  onIdChange?: (rowIndex: number, newId: string) => void;
-  onBubbleChange?: (
-    rowIndex: number,
-    date: string,
-    bubbleState: number
-  ) => void;
-  onRowClick?: (params: { row: DateGridRow; rowIndex: number }) => void;
-  onRowDelete?: (rowIndex: number) => void;
-  ariaLabel?: string;
-  ariaDescribedBy?: string;
-  loading?: boolean;
-  emptyMessage?: string;
-  idPlaceholder?: string;
-  showIdHeader?: boolean; // Whether to show the ID column (with blank header)
-  variant?: GridVariantType; // Border variant
-  idColumnWidth?: number; // Percentage width for ID column (0-100)
-  locale?: string; // Locale for date formatting (defaults to navigator.language)
-  dateFormat?: Intl.DateTimeFormatOptions; // Date format options for headers
-  showDeleteButton?: boolean; // Whether to show delete button for each row
+// Grid Props
+export interface GridProps {
+  columns: GridColumns; // Required: Column definitions
+  data: unknown[]; // Required: Row data array
+  className?: string; // Optional: Custom CSS class
+  borderless?: boolean; // Optional: Remove borders from the grid
+  hideFirstColumnHeader?: boolean; // Optional: Hide the first column's header
+  firstColumnWidth?: number; // Optional: Width percentage for the first column (default: 30)
 }
