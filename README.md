@@ -67,3 +67,5 @@ export default defineConfig([
   },
 ])
 ```
+
+Lopsum ipsum dolor sit amet, consectetur adipiscing elit.
