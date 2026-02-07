@@ -1,71 +1,71 @@
-# React + TypeScript + Vite
+# concerto
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Concerto is a Bun-based CLI orchestrator that routes a task through a deterministic
+agent pipeline: planner → implementor → reviewer → tester, with artifacts persisted
+per run under `.orchestrator/runs/<task_id>/`.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Planner** produces a structured plan JSON (no code changes).
+- **Implementor** applies a single plan step and emits a unified diff or proposed actions.
+- **Reviewer** validates diffs against constraints and project rules and can return concrete fixes.
+- **Tester** adds/updates tests only and runs the test command.
+- **Orchestrator** sequences agents, enforces guardrails, and writes artifacts.
+- **Repo Mode** clones a Git repo, creates a work branch, applies changes, commits, pushes, and opens a PR.
 
-## Expanding the ESLint configuration
+## CLI
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `orchestrator run '<task>' --repo <git_url>` queues a run and returns a `run_id`.
+- `orchestrator run '<task>' --repo <git_url> --start-worker` queues a run and starts a background worker.
+- `orchestrator worker` runs the queue worker loop.
+- `orchestrator status [run_id]` shows the latest run state (or a specific run).
+- `orchestrator plan '<task>'` runs planning only.
+- `orchestrator implement --run <path>` runs implementor only.
+- `orchestrator review --run <path>` runs reviewer only.
+- `orchestrator test --run <path>` runs tester only.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Artifacts
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Runs are stored under `.orchestrator/runs/<task_id>/`:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `task.json`
+- `plan.json`
+- `handoff.json`
+- `implementor.json`
+- `review.json`
+- `test.json`
+- `pr-draft.json`
+
+## Repo Workflow
+
+When using `--repo`, Concerto:
+
+- clones the repo to `.orchestrator/workspaces/<task_id>`
+- creates and checks out `concerto/<task-description>`
+- applies changes in that workspace
+- auto-commits, pushes, and creates a PR via the GitHub API
+
+The workspace is deleted at the end of the run unless you pass `--keep-workspace`.
+
+## Environment
+
+- `GITHUB_TOKEN` is required for PR creation (token needs `repo` scope for private repos).
+
+## Install
+
+```bash
+bun install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Run
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+bun run index.ts
 ```
 
-Lopsum ipsum dolor sit amet, consectetur adipiscing elit.
+This project was created using `bun init` in bun v1.2.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+
+## Development and Standards
+
+- See AGENTS.md at the repository root for coding standards and agent interfaces.
+- The available agents live under the `agents/` directory (see `agents/` for a list of available agents).
